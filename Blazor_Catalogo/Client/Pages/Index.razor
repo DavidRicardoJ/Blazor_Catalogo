@@ -1,0 +1,44 @@
+﻿@page "/"
+
+<h1>Catálogo de Produtos</h1>
+<hr />
+<h2>Macoratti.net</h2>
+
+@code{
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationState;
+        var user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            Console.WriteLine($"Olá {user.Identity.Name}, você está autenticado!");
+            if (user.IsInRole("admin"))
+            {
+                Console.WriteLine("Perfil: Administrador");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Você não está logado.");
+        }
+    }
+
+}
+
+
+@*<AuthorizeView>
+    <Authorized>
+        <h2>Olá, @context.User.Identity.Name!</h2>
+        <br />
+        @if (context.User.IsInRole("Admin"))
+        {
+            <span>Usuário Admin</span>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h2>Usuário não autorizado.</h2>
+    </NotAuthorized>
+</AuthorizeView>*@
