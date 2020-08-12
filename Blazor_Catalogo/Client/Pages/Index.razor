@@ -15,7 +15,7 @@
         if (user.Identity.IsAuthenticated)
         {
             Console.WriteLine($"Olá {user.Identity.Name}, você está autenticado!");
-            if (user.IsInRole("admin"))
+            if (user.IsInRole("Admin"))
             {
                 Console.WriteLine("Perfil: Administrador");
             }

@@ -2,6 +2,8 @@
 using Blazor_Catalogo.Server.Utils;
 using Blazor_Catalogo.Shared.Models;
 using Blazor_Catalogo.Shared.Recursos;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ namespace Blazor_Catalogo.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+   // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoriaController : ControllerBase
     {
         private readonly AppDbContext context;
@@ -21,28 +24,31 @@ namespace Blazor_Catalogo.Server.Controllers
         }
 
         [HttpGet("todas")]
-        public  async Task<ActionResult<List<Categoria>>> Get()
+        [AllowAnonymous]
+        public async Task<ActionResult<List<Categoria>>> Get()
         {
             return await context.Categorias.AsNoTracking().ToListAsync();
         }
 
 
         [HttpGet]
-        public async Task<ActionResult<List<Categoria>>> Get([FromQuery] Paginacao paginacao, 
+        [AllowAnonymous]
+        public async Task<ActionResult<List<Categoria>>> Get([FromQuery] Paginacao paginacao,
             [FromQuery] string nome)
         {
             var queryable = context.Categorias.AsQueryable();
 
-            if(!string.IsNullOrEmpty(nome))
+            if (!string.IsNullOrEmpty(nome))
             {
                 queryable = queryable.Where(x => x.Nome.Contains(nome));
             }
-            
+
             await HttpContext.InserirParametroEmPageResponse(queryable, paginacao.QuantidadePorPagina);
             return await queryable.Paginar(paginacao).ToListAsync();
         }
 
         [HttpGet("{id}", Name = "GetCategoria")]
+        [AllowAnonymous]
         public async Task<ActionResult<Categoria>> Get(int id)
         {
             return await context.Categorias.FirstOrDefaultAsync(x => x.CategoriaId == id);
